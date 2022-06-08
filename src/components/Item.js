@@ -1,5 +1,6 @@
 import { useDispatch } from 'react-redux';
-import { taskActions } from '../store';
+import { taskActions } from '../store/task-slice';
+import { alertActions } from '../store/alert-slice';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -14,6 +15,13 @@ const Item = (props) => {
 
   const removeHandler = () => {
     dispatch(taskActions.removeItem(props.id));
+
+    dispatch(
+      alertActions.changeAlertMsg({
+        className: 'alert-danger',
+        msg: 'item removed',
+      })
+    );
   };
 
   return (

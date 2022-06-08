@@ -1,34 +1,54 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { taskActions } from '../store';
+import { taskActions } from '../store/task-slice';
+import { alertActions } from '../store/alert-slice';
+
+import Alert from './Alert';
 
 const TaskForm = () => {
   const dispatch = useDispatch();
-  const editingItem = useSelector((state) => state.editingItem);
+  const editingItem = useSelector((state) => state.task.editingItem);
+  const alertMsg = useSelector((state) => state.alert.alertMsg);
   const [text, setText] = useState('');
 
+  // 알림 메시지 1초 후 지우기
   useEffect(() => {
-    if (editingItem) {
-      setText(editingItem.value);
-    }
+    if (!alertMsg) return;
+
+    setTimeout(() => {
+      dispatch(alertActions.removeAlertMsg());
+    }, 1000);
+  }, [alertMsg, dispatch]);
+
+  // 수정할 아이템 input에 내용 채우기
+  useEffect(() => {
+    if (!editingItem) return;
+
+    setText(editingItem.value);
   }, [editingItem]);
+
+  const showMsg = (className, msg) => {
+    dispatch(alertActions.changeAlertMsg({ className, msg }));
+  };
 
   const addItemHandler = (e) => {
     e.preventDefault();
 
-    // 빈값일 때 추가 X
-    if (!text.trim()) {
-      alert('내용을 입력해주세요.');
+    const trimedText = text.trim();
+
+    // 빈값일 때
+    if (!trimedText) {
+      showMsg('alert-danger', 'please enter value');
       return;
     }
 
     // 수정 모드일때
     if (editingItem) {
-      dispatch(
-        taskActions.editItem({ id: editingItem.id, value: text.trim() })
-      );
+      dispatch(taskActions.editItem({ id: editingItem.id, value: trimedText }));
+      showMsg('alert-success', 'value changed');
     } else {
-      dispatch(taskActions.addItem(text.trim()));
+      dispatch(taskActions.addItem(trimedText));
+      showMsg('alert-success', 'item add to the list');
     }
 
     setText('');
@@ -40,7 +60,7 @@ const TaskForm = () => {
 
   return (
     <form onSubmit={addItemHandler}>
-      <p></p>
+      {alertMsg && <Alert className={alertMsg.className}>{alertMsg.msg}</Alert>}
       <h3>grocery bud</h3>
       <div>
         <input

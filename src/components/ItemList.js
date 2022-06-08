@@ -1,14 +1,22 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { taskActions } from '../store';
+import { taskActions } from '../store/task-slice';
+import { alertActions } from '../store/alert-slice';
 
 import Item from './Item';
 
 const ItemList = () => {
   const dispatch = useDispatch();
-  const items = useSelector((state) => state.items);
+  const items = useSelector((state) => state.task.items);
 
   const clearHandler = () => {
     dispatch(taskActions.removeAllItem());
+
+    dispatch(
+      alertActions.changeAlertMsg({
+        className: 'alert-danger',
+        msg: 'empty list',
+      })
+    );
   };
 
   return (
