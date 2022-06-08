@@ -8,6 +8,10 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 const Item = (props) => {
   const dispatch = useDispatch();
 
+  const editHandler = () => {
+    dispatch(taskActions.changeEditingItem(props.id));
+  };
+
   const removeHandler = () => {
     dispatch(taskActions.removeItem(props.id));
   };
@@ -16,7 +20,7 @@ const Item = (props) => {
     <article data-id={props.id}>
       <p>{props.title}</p>
       <div>
-        <button>
+        <button onClick={editHandler}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
         <button onClick={removeHandler}>

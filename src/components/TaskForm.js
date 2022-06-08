@@ -1,10 +1,17 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { taskActions } from '../store';
 
 const TaskForm = () => {
   const dispatch = useDispatch();
+  const editingItem = useSelector((state) => state.editingItem);
   const [text, setText] = useState('');
+
+  useEffect(() => {
+    if (editingItem) {
+      setText(editingItem.value);
+    }
+  }, [editingItem]);
 
   const addItemHandler = (e) => {
     e.preventDefault();
@@ -12,9 +19,18 @@ const TaskForm = () => {
     // 빈값일 때 추가 X
     if (!text.trim()) {
       alert('내용을 입력해주세요.');
+      return;
     }
 
-    dispatch(taskActions.addItem(text.trim()));
+    // 수정 모드일때
+    if (editingItem) {
+      dispatch(
+        taskActions.editItem({ id: editingItem.id, value: text.trim() })
+      );
+    } else {
+      dispatch(taskActions.addItem(text.trim()));
+    }
+
     setText('');
   };
 
@@ -33,7 +49,7 @@ const TaskForm = () => {
           onChange={textChangeHandler}
           value={text}
         />
-        <button type="submit">submit</button>
+        <button type="submit">{editingItem ? 'Edit' : 'Submit'}</button>
       </div>
     </form>
   );
