@@ -1,16 +1,25 @@
+import { useDispatch } from 'react-redux';
+import { taskActions } from '../store';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const Item = (props) => {
+  const dispatch = useDispatch();
+
+  const removeHandler = () => {
+    dispatch(taskActions.removeItem(props.id));
+  };
+
   return (
-    <article>
+    <article data-id={props.id}>
       <p>{props.title}</p>
       <div>
         <button>
           <FontAwesomeIcon icon={faEdit} />
         </button>
-        <button>
+        <button onClick={removeHandler}>
           <FontAwesomeIcon icon={faTrash} />
         </button>
       </div>

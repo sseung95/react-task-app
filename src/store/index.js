@@ -15,7 +15,16 @@ const taskSlice = createSlice({
       });
     },
     editItem(state, action) {},
-    removeItem(state, action) {},
+    removeItem(state, action) {
+      // items에 존재하지 않으면 중지
+      const existingItem = state.items.find(
+        (item) => item.id === action.payload
+      );
+      if (!existingItem) return;
+
+      // 해당하는 item 제외한 배열 반환
+      state.items = state.items.filter((item) => item.id !== action.payload);
+    },
     removeAllItem(state) {
       state.items = [];
     },
